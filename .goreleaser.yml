@@ -1,0 +1,23 @@
+project_name: go-semver
+before:
+  hooks:
+    # you may remove this if you don't use vgo
+    - go mod tidy
+builds:
+- env:
+  - CGO_ENABLED=0
+  - GO111MODULE=on
+  main: ./cmd/semver/main.go
+  binary: semver
+  ldflags:
+  - -s -w -X cmd/semver/version.version={{.Version}}
+brews:
+- folder: Formula
+  github:
+    owner: pinterb
+    name: homebrew-tap
+  description: Get the contributor stats summary from all repos of any given organization
+nfpms:
+- formats:
+    - deb
+    - rpm
