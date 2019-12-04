@@ -7,3 +7,4 @@ A library &amp; CLI tool to manage semantic versions of software
 * [masterminds semver](https://github.com/Masterminds/semver)
 * [go-git](https://github.com/src-d/go-git)
 * [go-findroot](https://github.com/Integralist/go-findroot)
+* [semver-howto](https://github.com/dbrock/semver-howto)
