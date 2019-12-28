@@ -66,7 +66,7 @@ endif
 .PHONY: tag
 tag: increment-version  ## Create a new git tag to prepare to build a release
 	$(eval NEW_VERSION = $(shell cat $(VERSION_FILE)))
-	git tag -sa $(NEW_VERSION) -m "$(NEW_VERSION)"
+	git tag -a $(NEW_VERSION) -m "$(NEW_VERSION)"
 	@echo "Run git push origin $(NEW_VERSION) to push your new tag to GitHub."
 
 .PHONY: help
