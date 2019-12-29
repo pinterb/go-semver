@@ -21,13 +21,26 @@ builds:
   binary: semver
   ldflags:
   - -s -w -X github.com/pinterb/go-semver/cmd/semver/version.version={{.Version}}  -X github.com/pinterb/go-semver/cmd/semver/version.commit={{.Commit}} -X github.com/pinterb/go-semver/cmd/semver/version.date={{.Date}}
+archives:
+- name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  format_overrides:
+  - goos: windows
+    format: zip
 brews:
-- folder: Formula
-  github:
+- github:
     owner: pinterb
     name: homebrew-tap
-  description: Get the contributor stats summary from all repos of any given organization
+  folder: Formula
+  description: A tool to manage semantic versioning of software
+  test: |
+    system "#{bin}/semver version"
 nfpms:
-- formats:
-    - deb
-    - rpm
+- name_template: '{{ .ProjectName }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
+  description: A tool to manage semantic versioning of software
+  maintainer: Brad Pinter <brad.pinter@gmail.com>
+  license: MIT
+  formats:
+  - deb
+  - rpm
+  dependencies:
+  - git
