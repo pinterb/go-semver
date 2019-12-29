@@ -43,6 +43,9 @@ ci: lint test  ## Use during CI
 build:  ## Compile
 	go build -o ./dist/$(BIN) ./cmd/semver/main.go
 
+clean:  ## Clean
+	@rm -rf ./dist
+
 .PHONY: bump-version
 VALID_BUMPS = major minor patch premajor preminor prepatch prerelease
 PRERELEASES = premajor preminor prepatch prerelease

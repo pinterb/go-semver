@@ -7,10 +7,20 @@ builds:
 - env:
   - CGO_ENABLED=0
   - GO111MODULE=on
+  goos:
+  - linux
+  - darwin
+  - windows
+  goarch:
+  - amd64
+  - 386
+  ignore:
+  - goos: linux
+    goarch: 386
   main: ./cmd/semver/main.go
   binary: semver
   ldflags:
-  - -s -w -X cmd/semver/version.version={{.Version}}
+  - -s -w -X github.com/pinterb/go-semver/cmd/semver/version.version={{.Version}}  -X github.com/pinterb/go-semver/cmd/semver/version.commit={{.Commit}} -X github.com/pinterb/go-semver/cmd/semver/version.date={{.Date}}
 brews:
 - folder: Formula
   github:
