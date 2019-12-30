@@ -35,8 +35,8 @@ func (t ReleaseType) String() string {
 	return [...]string{"major", "minor", "patch", "premajor", "preminor", "prepatch", "prerelease", "pre"}[t]
 }
 
-// NewReleaseType is a convenience function for getting a valid ReleaseType
-func NewReleaseType(rt string) (ReleaseType, error) {
+// ToReleaseType is a convenience function for getting a valid ReleaseType
+func ToReleaseType(rt string) (ReleaseType, error) {
 	var rtn ReleaseType
 	var err error
 

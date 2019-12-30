@@ -1,12 +1,12 @@
 package git
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
+	"gopkg.in/src-d/go-git.v4/plumbing"
+
 	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 // rootPath isn't really getting the root path. But it does try to make sure that the path specified is a valid directory
@@ -50,18 +50,18 @@ func Tags(path string) ([]string, error) {
 		return stags, err
 	}
 
-	tags, err := r.TagObjects()
+	// all tag references, both lightweight tags and annotated tags
+	tags, err := r.Tags()
 	if err != nil {
 		return stags, err
 	}
 
 	stags = make([]string, 0)
 
-	err = tags.ForEach(func(t *object.Tag) error {
-		fmt.Println(t)
-		stags = append(stags, t.Name)
+	err = tags.ForEach(func(t *plumbing.Reference) error {
+		stags = append(stags, t.Name().Short())
 		return nil
 	})
 
-	return stags, nil
+	return stags, err
 }

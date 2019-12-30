@@ -8,11 +8,12 @@
 # Test binary, build with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
 # IDE configs
 **/.idea/*
 
-# binaries 
-**/dist/*
+# binaries
+dist/
+bin/
+
+coverage.out
+debug.test
