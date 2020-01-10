@@ -15,11 +15,6 @@ git repository tags and perhaps most importantly, it can help manage
 git tags by providing a clean interface for incrementing a current tag
 to a valid next version.
 
-
-```
-semver [flags]
-```
-
 ### Examples
 Validate a list of versions (where some versions are malformed and others are
 invalid):
@@ -55,19 +50,19 @@ root@laptop:~/some-repo$ semver -r -i -d
 ### Options
 
 ```
-  -i, --increment string[="patch"]                             Increment a valid version by the specified level. Level can 
-                                                               be one of: major, minor, patch, premajor, preminor, prepatch, 
-                                                               or prerelease. If more than one version is provided, then 
-                                                               the most current version is incremented.
+  -i, --increment string[="patch"]                        Increment a valid version by the specified level. Level can
+                                                          be one of: major, minor, patch, premajor, preminor, prepatch,
+                                                          or prerelease. If more than one version is provided, then
+                                                          the most current version is incremented.
 
-      --preid string                                           Identifier to be used to prefix premajor, preminor, 
-                                                               prepatch or prerelease version increments.
+      --preid string                                      Identifier to be used to prefix premajor, preminor,
+                                                          prepatch or prerelease version increments.
 
-  -r, --repo-dir string[="/home/pinterb/projects/go-semver"]   Use tags from a local git repo as source of versions.
+  -r, --repo-dir string[="/current/working/directory"]    Use tags from a local git repo as source of versions.
 
-  -d, --default string[="0.0.0"]                               Default version to use when no valid versions are provided
+  -d, --default string[="0.0.0"]                          Default version to use when no valid versions are provided
 
-  -h, --help                                                   Help for semver
+  -h, --help                                              Help for semver
 ```
 
 ### Inspirational/Interesting Links
