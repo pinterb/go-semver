@@ -62,6 +62,8 @@ root@laptop:~/some-repo$ semver -r -i -d
 
   -d, --default string[="0.0.0"]                          Default version to use when no valid versions are provided
 
+  -l, --latest-only                                       Only return the latest version
+
   -h, --help                                              Help for semver
 ```
 

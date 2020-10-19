@@ -17,10 +17,11 @@ import (
 )
 
 var (
-	gdir  string
-	incr  string
-	preid string
-	defv  string
+	gdir       string
+	incr       string
+	preid      string
+	defv       string
+	latestOnly bool
 
 	incrdesc = fmt.Sprintf("Increment a valid version by the specified level. Level can %sbe one of: major, minor, patch, premajor, preminor, prepatch, %sor prerelease. If more than one version is provided, then %sthe most current version is incremented.", crlf.Linebreak, crlf.Linebreak, crlf.Linebreak)
 	predesc  = fmt.Sprintf("Identifier to be used to prefix premajor, preminor, %sprepatch or prerelease version increments.", crlf.Linebreak)
@@ -78,6 +79,8 @@ to a valid next version.
 	rootCmd.Flags().StringVarP(&defv, "default", "d", "", "Default version to use when no valid versions are provided")
 	rootCmd.Flag("default").NoOptDefVal = "0.0.0"
 
+	rootCmd.Flags().BoolVarP(&latestOnly, "latest-only", "l", false, "Only return the latest version")
+
 	rootCmd.Flags().BoolP("help", "h", false, "Help for semver")
 
 	// add subcommands
@@ -93,7 +96,7 @@ func main() {
 		os.Exit(2)
 	}
 
-	//	docs(root)
+	// docs(root)
 }
 
 func validArgs(cmd *cobra.Command, args []string) error {
@@ -135,7 +138,10 @@ func handleVersions(cmd *cobra.Command, args []string) error {
 
 	if len(valid) > 0 {
 		if incr == "" {
-			fv := strings.Join(valid, " ")
+			var fv string = strings.Join(valid, " ")
+			if latestOnly {
+				fv = valid[len(valid)-1]
+			}
 			fmt.Println(fv)
 		} else {
 			rt, err := semver.ToReleaseType(incr)
