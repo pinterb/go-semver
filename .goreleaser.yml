@@ -19,7 +19,7 @@ builds:
     main: ./cmd/semver/main.go
     binary: semver
     ldflags:
-      - -s -w -buildid -X sigs.k8s.io/release-utils/version.gitVersion={{.Version}} -X sigs.k8s.io/release-utils/version.gitCommit={{.Commit}} -X sigs.k8s.io/release-utils/version.buildDate={{.Date}} -X sigs.k8s.io/release-utils/version.gitTreeState=clean
+      - -s -w -X sigs.k8s.io/release-utils/version.gitVersion={{.Version}} -X sigs.k8s.io/release-utils/version.gitCommit={{.Commit}} -X sigs.k8s.io/release-utils/version.buildDate={{.Date}} -X sigs.k8s.io/release-utils/version.gitTreeState=clean
 archives:
   - replacements:
       darwin: Darwin
