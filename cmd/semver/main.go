@@ -8,12 +8,12 @@ import (
 	"os"
 	"strings"
 
-	"github.com/pinterb/go-semver/cmd/semver/version"
-	"github.com/pinterb/go-semver/pkg/crlf"
-	"github.com/pinterb/go-semver/pkg/git"
-	"github.com/pinterb/go-semver/pkg/semver"
+	"github.com/pinterb/go-semver/internal/crlf"
+	"github.com/pinterb/go-semver/internal/git"
+	"github.com/pinterb/go-semver/internal/semver"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
+	"sigs.k8s.io/release-utils/version"
 )
 
 var (
@@ -84,7 +84,7 @@ to a valid next version.
 	rootCmd.Flags().BoolP("help", "h", false, "Help for semver")
 
 	// add subcommands
-	rootCmd.AddCommand(version.Subcommand())
+	rootCmd.AddCommand(version.Version())
 
 	return rootCmd
 }
