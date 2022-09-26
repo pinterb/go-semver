@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/pinterb/go-semver/cmd/semver/version"
-	"github.com/pinterb/go-semver/internal/crlf"
-	"github.com/pinterb/go-semver/internal/git"
-	"github.com/pinterb/go-semver/internal/semver"
+	"github.com/pinterb/go-semver/pkg/crlf"
+	"github.com/pinterb/go-semver/pkg/git"
+	"github.com/pinterb/go-semver/pkg/semver"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
 )
@@ -104,7 +104,7 @@ func validArgs(cmd *cobra.Command, args []string) error {
 		return errors.New("at least one version needs to be provided")
 	}
 
-	if len(args) > 0 && gdir != "" {
+	if len(args) > 1 && gdir != "" {
 		return errors.New("versions are not allowed when specifying a git repository")
 	}
 
