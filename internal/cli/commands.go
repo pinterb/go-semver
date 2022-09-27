@@ -59,6 +59,30 @@ to a valid next version.
 		},
 	}
 
+	path, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+
+	// add flags
+	cmd.Flags().SortFlags = false
+
+	cmd.Flags().StringVarP(&incr, "increment", "i", "", incrdesc)
+	cmd.Flag("increment").NoOptDefVal = "patch"
+
+	cmd.Flags().StringVar(&preid, "preid", "", predesc)
+
+	cmd.Flags().StringVarP(&gdir, "repo-dir", "r", "", "Use tags from a local git repo as source of versions.")
+	cmd.Flag("repo-dir").NoOptDefVal = path
+
+	cmd.Flags().StringVarP(&defv, "default", "d", "", "Default version to use when no valid versions are provided")
+	cmd.Flag("default").NoOptDefVal = "0.0.0"
+
+	cmd.Flags().BoolVarP(&latestOnly, "latest-only", "l", false, "Only return the latest version")
+
+	cmd.Flags().BoolP("help", "h", false, "Help for semver")
+
 	cmd.AddCommand(version.Version())
 	return cmd
 }
