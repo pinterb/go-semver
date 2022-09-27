@@ -1,10 +1,18 @@
 project_name: go-semver
+
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
+
+env:
+  - COSIGN_EXPERIMENTAL=true
+
 builds:
-  - env:
+  - id: go-semver-build
+    binary: semver
+    main: ./main.go
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -12,14 +20,16 @@ builds:
       - windows
     goarch:
       - amd64
-      - 386
+      - "386"
     ignore:
       - goos: linux
-        goarch: 386
-    main: ./cmd/semver/main.go
-    binary: semver
+        goarch: "386"
+    flags:
+      - -trimpath
+    mod_timestamp: '{{ .CommitTimestamp }}'
     ldflags:
-      - -s -w -buildid -X sigs.k8s.io/release-utils/version.gitVersion={{.Version}} -X sigs.k8s.io/release-utils/version.gitCommit={{.Commit}} -X sigs.k8s.io/release-utils/version.buildDate={{.Date}} -X sigs.k8s.io/release-utils/version.gitTreeState=clean
+      - "{{ .Env.LDFLAGS }}"
+
 archives:
   - replacements:
       darwin: Darwin
@@ -30,10 +40,16 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - LICENSE
+    wrap_in_directory: true
+
 checksum:
   name_template: 'checksums.txt'
+
 snapshot:
   name_template: "{{ .Tag }}-next"
+
 nfpms:
   - file_name_template: '{{ .ProjectName }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}'
     description: A tool to manage semantic versioning of software

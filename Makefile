@@ -1,11 +1,17 @@
-SHELL = /usr/bin/env bash
+# Some nice defines for the "make install" target
+PREFIX ?= /usr
+BINDIR ?= ${PREFIX}/bin
 
-# The binary to build (just the basename).
-BIN := semver
+# Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
+ifeq (,$(shell go env GOBIN))
+GOBIN=$(shell go env GOPATH)/bin
+else
+GOBIN=$(shell go env GOBIN)
+endif
 
-SOURCE_FILES?=./...
-TEST_PATTERN?=.
-TEST_OPTIONS?=
+GOFILES ?= $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+
+RUNTIME_IMAGE ?= gcr.io/distroless/static
 
 # Set version variables for LDFLAGS
 GIT_TAG ?= dirty-tag
@@ -35,37 +41,96 @@ LDFLAGS=-buildid= -X $(PKG).gitVersion=$(GIT_VERSION) \
 VDIR := $(shell mktemp -d "/tmp/$(basename $0).XXXXXXXXXXXX")
 VERSION_FILE := "$(VDIR)/VERSION.txt"
 
-export GOPROXY 		:= https://proxy.golang.org,https://gocenter.io,direct
+#export GOPROXY 		:= https://proxy.golang.org,https://gocenter.io,direct
 export PATH 		:= ./bin:$(PATH)
-export GO111MODULE 	:= on
+#export GO111MODULE 	:= on
+
+##########
+# default
+##########
+
+default: help
 
 .PHONY: setup
 setup:  ## Install all the build and lint dependencies
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh
 	go mod tidy
 
-test:  ## Test
-	go test $(TEST_OPTIONS) -v -failfast -race -coverpkg=./... -covermode=atomic -coverprofile=coverage.out $(SOURCE_FILES) -run $(TEST_PATTERN) -timeout=2m
+##########
+# Build
+##########
 
-cover: test ## Coverage
-	go tool cover -html=coverage.out
+.PHONY: semver
+semver: $(SRCS) ## Builds semver
+	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ ./
 
-fmt:  ## Format golang files
-	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$$file"; goimports -w "$$file"; done
+.PHONY: install
+install: $(SRCS) ## Installs semver into BINDIR (default /usr/bin)
+	install -Dm755 semver ${DESTDIR}${BINDIR}/semver
+	install -dm755 ${DESTDIR}/usr/share/semver/pipelines
+	tar c -C pipelines . | tar x -C "${DESTDIR}/usr/share/semver/pipelines"
 
-lint:  ## Perform linting
-	./bin/golangci-lint run ./...
+#####################
+# lint / test section
+#####################
 
-ci: lint test  ## Use during CI
+GOLANGCI_LINT_DIR = $(shell pwd)/bin
+GOLANGCI_LINT_BIN = $(GOLANGCI_LINT_DIR)/golangci-lint
 
-build:  ## Compile
-	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o ./dist/$(BIN) ./cmd/semver/main.go
+.PHONY: golangci-lint
+golangci-lint:
+	rm -f $(GOLANGCI_LINT_BIN) || :
+	set -e ;\
+	GOBIN=$(GOLANGCI_LINT_DIR) go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.44.2 ;\
 
-clean:  ## Clean
-	@rm -rf ./dist
+.PHONY: fmt
+fmt: ## Format all go files
+	@ $(MAKE) --no-print-directory log-$@
+	goimports -w $(GOFILES)
 
-downloader:  ## Refresh downloader script
-	@godownloader --repo=pinterb/go-semver > ./godownloader-go-semver.sh
+.PHONY: checkfmt
+checkfmt: SHELL := /usr/bin/env bash
+checkfmt: ## Check formatting of all go files
+	@ $(MAKE) --no-print-directory log-$@
+ 	$(shell test -z "$(shell gofmt -l $(GOFILES) | tee /dev/stderr)")
+ 	$(shell test -z "$(shell goimports -l $(GOFILES) | tee /dev/stderr)")
+
+log-%:
+	@grep -h -E '^$*:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk \
+			'BEGIN { \
+				FS = ":.*?## " \
+			}; \
+			{ \
+				printf "\033[36m==> %s\033[0m\n", $$2 \
+			}'
+
+.PHONY: lint
+lint: checkfmt golangci-lint ## Run linters and checks like golangci-lint
+	$(GOLANGCI_LINT_BIN) run -n
+
+.PHONY: test
+test: ## Run go test
+	go test ./...
+
+.PHONY: clean
+clean: ## Clean the workspace
+	rm -rf melange
+	rm -rf bin/
+	rm -rf dist/
+
+
+#######################
+# Release / goreleaser
+#######################
+
+.PHONY: snapshot
+snapshot: ## Run Goreleaser in snapshot mode
+	LDFLAGS="$(LDFLAGS)" goreleaser release --rm-dist --snapshot --skip-sign --skip-publish
+
+.PHONY: release
+release: ## Run Goreleaser in release mode
+	LDFLAGS="$(LDFLAGS)" goreleaser release --rm-dist
 
 .PHONY: increment-version
 VALID_BUMPS = major minor patch premajor preminor prepatch prerelease
@@ -93,9 +158,16 @@ tag: increment-version  ## Create a new git tag to prepare to build a release
 	git tag -a $(NEW_VERSION) -m "$(NEW_VERSION)"
 	@echo "Run git push origin $(NEW_VERSION) to push your new tag to GitHub."
 
+#################
+# help
+##################
+
 .PHONY: help
-help:  ## Show help messages for make targets
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[32m%-30s\033[0m %s\n", $$1, $$2}'
+help: ## Display help
+	@awk -F ':|##' \
+		'/^[^\t].+?:.*?##/ {\
+			printf "\033[36m%-30s\033[0m %s\n", $$1, $$NF \
+		}' $(MAKEFILE_LIST) | sort
 
 .DEFAULT_GOAL := help
 
