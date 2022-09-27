@@ -130,7 +130,7 @@ snapshot: ## Run Goreleaser in snapshot mode
 
 .PHONY: release
 release: ## Run Goreleaser in release mode
-	LDFLAGS="$(LDFLAGS)" goreleaser release --rm-dist
+	LDFLAGS="$(LDFLAGS)" goreleaser release --rm-dist --skip-validate
 
 .PHONY: increment-version
 VALID_BUMPS = major minor patch premajor preminor prepatch prerelease
