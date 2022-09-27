@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bytes"
@@ -27,8 +27,8 @@ var (
 	predesc  = fmt.Sprintf("Identifier to be used to prefix premajor, preminor, %sprepatch or prerelease version increments.", crlf.Linebreak)
 )
 
-func commandRoot() *cobra.Command {
-	rootCmd := &cobra.Command{
+func New() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "semver",
 		Short: "A tool to manage semantic versioning of software",
 		Long: `
@@ -59,44 +59,8 @@ to a valid next version.
 		},
 	}
 
-	path, err := os.Getwd()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(2)
-	}
-
-	// add flags
-	rootCmd.Flags().SortFlags = false
-
-	rootCmd.Flags().StringVarP(&incr, "increment", "i", "", incrdesc)
-	rootCmd.Flag("increment").NoOptDefVal = "patch"
-
-	rootCmd.Flags().StringVar(&preid, "preid", "", predesc)
-
-	rootCmd.Flags().StringVarP(&gdir, "repo-dir", "r", "", "Use tags from a local git repo as source of versions.")
-	rootCmd.Flag("repo-dir").NoOptDefVal = path
-
-	rootCmd.Flags().StringVarP(&defv, "default", "d", "", "Default version to use when no valid versions are provided")
-	rootCmd.Flag("default").NoOptDefVal = "0.0.0"
-
-	rootCmd.Flags().BoolVarP(&latestOnly, "latest-only", "l", false, "Only return the latest version")
-
-	rootCmd.Flags().BoolP("help", "h", false, "Help for semver")
-
-	// add subcommands
-	rootCmd.AddCommand(version.Version())
-
-	return rootCmd
-}
-
-func main() {
-	root := commandRoot()
-	if err := root.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err.Error())
-		os.Exit(2)
-	}
-
-	// docs(root)
+	cmd.AddCommand(version.Version())
+	return cmd
 }
 
 func validArgs(cmd *cobra.Command, args []string) error {
