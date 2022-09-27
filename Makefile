@@ -137,7 +137,7 @@ VALID_BUMPS = major minor patch premajor preminor prepatch prerelease
 PRERELEASES = premajor preminor prepatch prerelease
 PREIDS = alpha beta rc
 BUMP := patch
-increment-version: build  ## Display incremented version using go-semver. Set BUMP to [ major | minor | patch | premajor | preminor | prepatch | prerelease ]
+increment-version: semver  ## Display incremented version using go-semver. Set BUMP to [ major | minor | patch | premajor | preminor | prepatch | prerelease ]
 ifneq ($(GITUNTRACKEDCHANGES),)
 	$(error Not allowed to bump version when git repo has uncommitted changes. Commit your changes and try again.)
 endif
@@ -145,9 +145,9 @@ ifeq ($(filter $(VALID_BUMPS),$(BUMP)),)
 	$(error Invalid version bump $(BUMP). BUMP should be one of '$(VALID_BUMPS)')
 endif
 ifneq ($(filter $(PRERELEASES),$(BUMP)),)
-	$(eval NEW_VERSION = $(shell ./dist/semver -r -d --increment=$(BUMP) --preid=rc))
+	$(eval NEW_VERSION = $(shell ./semver -r -d --increment=$(BUMP) --preid=rc))
 else
-	$(eval NEW_VERSION = $(shell ./dist/semver -r -d --increment=$(BUMP)))
+	$(eval NEW_VERSION = $(shell ./semver -r -d --increment=$(BUMP)))
 endif
 	@echo "Bumping version to $(NEW_VERSION)"
 	@echo $(NEW_VERSION) > $(VERSION_FILE)
