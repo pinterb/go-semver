@@ -145,9 +145,9 @@ ifeq ($(filter $(VALID_BUMPS),$(BUMP)),)
 	$(error Invalid version bump $(BUMP). BUMP should be one of '$(VALID_BUMPS)')
 endif
 ifneq ($(filter $(PRERELEASES),$(BUMP)),)
-	$(eval NEW_VERSION = $(shell ./dist/semver -r -d --increment=$(BUMP) --preid=rc))
+	$(eval NEW_VERSION = $(shell ./semver -r -d --increment=$(BUMP) --preid=rc))
 else
-	$(eval NEW_VERSION = $(shell ./dist/semver -r -d --increment=$(BUMP)))
+	$(eval NEW_VERSION = $(shell ./semver -r -d --increment=$(BUMP)))
 endif
 	@echo "Bumping version to $(NEW_VERSION)"
 	@echo $(NEW_VERSION) > $(VERSION_FILE)
