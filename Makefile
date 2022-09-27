@@ -68,8 +68,6 @@ semver: $(SRCS) ## Builds semver
 .PHONY: install
 install: $(SRCS) ## Installs semver into BINDIR (default /usr/bin)
 	install -Dm755 semver ${DESTDIR}${BINDIR}/semver
-	install -dm755 ${DESTDIR}/usr/share/semver/pipelines
-	tar c -C pipelines . | tar x -C "${DESTDIR}/usr/share/semver/pipelines"
 
 #####################
 # lint / test section
