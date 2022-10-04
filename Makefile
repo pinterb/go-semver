@@ -75,7 +75,7 @@ semver: $(SRCS) ## Builds semver
 	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o $@ ./
 
 .PHONY: install
-install: $(SRCS) ## Installs semver into BINDIR (default /usr/bin)
+install: semver ## Installs semver into BINDIR (default /usr/bin)
 	install -Dm755 semver ${DESTDIR}${BINDIR}/semver
 
 #####################
@@ -123,7 +123,7 @@ test: ## Run go test
 
 .PHONY: clean
 clean: ## Clean the workspace
-	rm -rf melange
+	rm -rf semver
 	rm -rf bin/
 	rm -rf dist/
 
