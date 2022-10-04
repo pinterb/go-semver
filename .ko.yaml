@@ -1,0 +1,14 @@
+baseImageOverrides:
+  # This self-hosts our own Alpine base image.
+  github.com/pinterb/go-semver: cgr.dev/chainguard/alpine-base
+
+builds:
+- id: go-semver
+  env:
+  - CGO_ENABLED=0
+  flags:
+  - -trimpath
+  ldflags:
+  - -extldflags "-static"
+  - "{{ .Env.LDFLAGS }}"
+

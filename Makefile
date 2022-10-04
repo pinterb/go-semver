@@ -46,6 +46,15 @@ VERSION_FILE := "$(VDIR)/VERSION.txt"
 export PATH 		:= ./bin:$(PATH)
 #export GO111MODULE 	:= on
 
+KO_DOCKER_REPO ?= docker.io/pinterb/go-semver
+DIGEST ?=
+
+KOCACHE_PATH=/tmp/ko
+
+define create_kocache_path
+  mkdir -p $(KOCACHE_PATH)
+endef
+
 ##########
 # default
 ##########
@@ -156,6 +165,43 @@ tag: increment-version  ## Create a new git tag to prepare to build a release
 	$(eval NEW_VERSION = $(shell cat $(VERSION_FILE)))
 	git tag -a $(NEW_VERSION) -m "$(NEW_VERSION)"
 	@echo "Run git push origin $(NEW_VERSION) to push your new tag to GitHub."
+
+
+##########
+# ko build
+##########
+
+.PHONY: ko
+ko: ## Build images using ko
+	$(create_kocache_path)
+	$(eval DIGEST := $(shell LDFLAGS="$(LDFLAGS)" GIT_HASH=$(GIT_HASH) GIT_VERSION=$(GIT_VERSION) \
+	KOCACHE=$(KOCACHE_PATH) ko build --bare \
+		--platform=linux/amd64,linux/arm64 --tags $(GIT_VERSION) --tags $(GIT_HASH) \
+		github.com/pinterb/go-semver))
+	@echo Image Digest $(DIGEST)
+
+.PHONY: ko-local
+ko-local:  ## Build images locally using ko
+	$(create_kocache_path)
+	LDFLAGS="$(LDFLAGS)" GIT_HASH=$(GIT_HASH) GIT_VERSION=$(GIT_VERSION) \
+	KOCACHE=$(KOCACHE_PATH) ko build --bare \
+		--tags $(GIT_VERSION) --tags $(GIT_HASH) --local \
+		github.com/pinterb/go-semver
+
+.PHONY: ko-apply
+ko-apply:  ## Build the image and apply the manifests
+	$(create_kocache_path)
+	LDFLAGS="$(LDFLAGS)" \
+	KOCACHE=$(KOCACHE_PATH) ko apply --base-import-paths \
+		--recursive --filename config/
+
+.PHONY: ko-apply
+ko-resolve:  ## Build the image generate the Task YAML
+	$(create_kocache_path)
+	LDFLAGS="$(LDFLAGS)" \
+	KOCACHE=$(KOCACHE_PATH) ko resolve --base-import-paths \
+		--recursive --filename config/ > task.yaml
+
 
 #################
 # help
