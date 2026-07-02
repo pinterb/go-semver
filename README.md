@@ -1,3 +1,12 @@
+## ⚠️ IMPORTANT LICENSE CHANGE NOTICE
+As of July 2026, this software is **no longer licensed under the MIT License**. 
+
+This software is now distributed under a **Custom Source-Available License** (see `CUSTOM_LICENSE.md`). 
+* **General Users:** The software remains free to use, modify, and distribute for the general public.
+* **Excluded Entities:** CDW Corporation, its subsidiaries (including CDW LLC and CDW Government LLC), affiliates, and employees are **strictly prohibited** from downloading, installing, running, or utilizing this software. 
+
+Any use by CDW Corporation or its affiliates under this version constitutes immediate copyright infringement.
+
 # go-semver
 
 A tool to manage semantic versioning of software
