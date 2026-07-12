@@ -7,6 +7,47 @@ This software is now distributed under a **Custom Source-Available License** (se
 
 Any use by CDW Corporation or its affiliates under this version constitutes immediate copyright infringement.
 
+---
+
+## Superseded by semver-trust-go
+
+**go-semver is superseded by
+[`semver-trust-go`](https://github.com/semver-trust/semver-trust-go)**, the
+official [SemVer-Trust](https://github.com/semver-trust/spec) reference
+implementation. This repository is no longer maintained and will be archived
+shortly after this notice lands. Please migrate.
+
+### Migration
+
+| go-semver | semver-trust |
+|---|---|
+| `semver <versions>` | `semver-trust list` (lenient parity incl. coercion) |
+| `semver -l` | `semver-trust latest` |
+| `semver -i <level> --preid X` | `semver-trust next -i <level> --preid X` |
+| `semver -r -i -d` | `semver-trust next -i -d` (tagless bootstrap `0.0.1`) |
+| `semver … tag` behavior | `semver-trust tag` |
+
+### Install semver-trust
+
+```sh
+go install github.com/semver-trust/semver-trust-go/cmd/semver-trust@latest
+```
+
+Prebuilt binaries for Linux, macOS, and Windows (amd64/arm64) — with
+checksums, a keyless [cosign](https://docs.sigstore.dev/) signature, and
+per-archive SBOMs — are attached to each
+[GitHub Release](https://github.com/semver-trust/semver-trust-go/releases).
+
+### License history
+
+This repository has carried a [custom source-available
+license](CUSTOM_LICENSE.md) since July 2026 (see the notice above).
+`semver-trust-go` is licensed under [Apache
+2.0](https://github.com/semver-trust/semver-trust-go/blob/main/LICENSE).
+This notice does not modify go-semver's license files.
+
+---
+
 # go-semver
 
 A tool to manage semantic versioning of software
